@@ -171,11 +171,30 @@ export interface TLEditorOptions {
 	 * (optional) The editor's initial active tool (or other state node id).
 	 */
 	initialState?: string
+	/**
+	 * The multiplier factor for the sensitivity for pinch-to-zoom and cmd/ctrl+scroll. The higher
+	 * the number, the more sensitive the zoom.
+	 */
+	pinchZoomSensitivity?: number
 }
 
 /** @public */
 export class Editor extends EventEmitter<TLEventMap> {
-	constructor({ store, user, shapeUtils, tools, getContainer, initialState }: TLEditorOptions) {
+	/**
+	 * The multiplier factor for the sensitivity for pinch-to-zoom and cmd/ctrl+scroll. The higher
+	 * the number, the more sensitive the zoom.
+	 */
+	pinchZoomSensitivity = 1
+
+	constructor({
+		store,
+		user,
+		shapeUtils,
+		tools,
+		getContainer,
+		initialState,
+		pinchZoomSensitivity,
+	}: TLEditorOptions) {
 		super()
 
 		this.store = store
@@ -194,6 +213,10 @@ export class Editor extends EventEmitter<TLEventMap> {
 
 		this.root = new NewRoot(this)
 		this.root.children = {}
+
+		if (pinchZoomSensitivity !== undefined) {
+			this.pinchZoomSensitivity = pinchZoomSensitivity
+		}
 
 		const allShapeUtils = checkShapesAndAddCore(shapeUtils)
 
@@ -8593,7 +8616,10 @@ export class Editor extends EventEmitter<TLEventMap> {
 							const { x, y } = this.inputs.currentScreenPoint
 							const { x: cx, y: cy, z: cz } = this.camera
 
-							const zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, cz + (info.delta.z ?? 0) * cz))
+							const zoom = Math.min(
+								MAX_ZOOM,
+								Math.max(MIN_ZOOM, cz + (info.delta.z ?? 0) * cz * this.pinchZoomSensitivity)
+							)
 
 							this.setCamera({
 								x: cx + (x / zoom - x) - (x / cz - x),

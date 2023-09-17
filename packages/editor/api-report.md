@@ -533,7 +533,7 @@ export class Edge2d extends Geometry2d {
 
 // @public (undocumented)
 export class Editor extends EventEmitter<TLEventMap> {
-    constructor({ store, user, shapeUtils, tools, getContainer, initialState }: TLEditorOptions);
+    constructor({ store, user, shapeUtils, tools, getContainer, initialState, pinchZoomSensitivity, }: TLEditorOptions);
     addOpenMenu(id: string): this;
     alignShapes(shapes: TLShape[] | TLShapeId[], operation: 'bottom' | 'center-horizontal' | 'center-vertical' | 'left' | 'right' | 'top'): this;
     animateShape(partial: null | TLShapePartial | undefined, animationOptions?: TLAnimationOptions): this;
@@ -763,6 +763,7 @@ export class Editor extends EventEmitter<TLEventMap> {
     };
     pan(offset: VecLike, animation?: TLAnimationOptions): this;
     panZoomIntoView(ids: TLShapeId[], animation?: TLAnimationOptions): this;
+    pinchZoomSensitivity: number;
     popFocusedGroupId(): this;
     putContentOntoCurrentPage(content: TLContent, options?: {
         point?: VecLike;
@@ -2030,6 +2031,7 @@ export type TLEditorComponents = {
 export interface TLEditorOptions {
     getContainer: () => HTMLElement;
     initialState?: string;
+    pinchZoomSensitivity?: number;
     shapeUtils: readonly TLShapeUtilConstructor<TLUnknownShape>[];
     store: TLStore;
     tools: readonly TLStateNodeConstructor[];
